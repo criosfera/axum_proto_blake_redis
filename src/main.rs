@@ -172,22 +172,11 @@ async fn main() -> anyhow::Result<()> {
         // --- CAPA DE DEBUG ELIMINADA ---
         // .layer(TraceLayer::new_for_http());
 
-    let addr = SocketAddr::from(([0, 0, 0, 0], 443));
-    println!("Santuario seguro escuchando en https://{}", addr);
+    let listener = tokio::net::TcpListener::bind("0.0.0.0:8080").await?;
+    println!("Santuario escuchando LOCALMENTE en http://{}", listener.local_addr()?);
+    
+    axum::serve(listener, app.into_make_service()).await?;
 
-    // CORRECCIÓN: Usamos la ruta completa a `RustlsConfig`.
-    let tls_config = RustlsConfig::from_pem_file(
-        "/etc/letsencrypt/live/plexo.cl/fullchain.pem",
-        "/etc/letsencrypt/live/plexo.cl/privkey.pem",
-    )
-    .await?;
-
-    // CORRECCIÓN: Usamos la ruta completa a `bind_rustls`.
-    axum_server::bind_rustls(addr, tls_config)
-        .serve(app.into_make_service())
-        .await?;
-
-    // CORRECCIÓN: Devolvemos Ok(()) para satisfacer el tipo de retorno de main.
     Ok(())
 }
 
