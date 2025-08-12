@@ -134,6 +134,11 @@ async fn protected_route(axum::Extension(user_id): axum::Extension<UserId>) -> i
     )
 }
 
+// --- Handler para la ruta raíz ---
+async fn root_handler() -> &'static str {
+    "Hello, World!"
+}
+
 // --- Programa Principal ---
 // --- Programa Principal (Modo Performance) ---
 #[tokio::main]
@@ -155,6 +160,7 @@ async fn main() -> anyhow::Result<()> {
     });
 
     let app = Router::new()
+        .route("/", get(root_handler))
         .route("/register", post(register_user))
         .route("/login", post(login))
         .route(
