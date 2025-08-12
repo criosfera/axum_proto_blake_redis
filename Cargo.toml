@@ -19,5 +19,10 @@ base64 = "0.22.0"
 chrono = "0.4.38"
 subtle = "2.5.0"
 
+axum-server = { version = "0.6.0", features = ["tls-rustls"] }
+rustls = "0.23.31"
+rustls-pemfile = "2.2.0"
+anyhow = "1.0.82"
+
 [build-dependencies]
 prost-build = "0.12.3"

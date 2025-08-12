@@ -15,6 +15,8 @@ use chrono::{Duration, Utc};
 use prost::Message;
 use serde::{Deserialize, Serialize};
 use std::sync::Arc;
+use std::net::SocketAddr;
+use axum_server::tls_rustls::RustlsConfig;
 
 // --- Módulo Protobuf ---
 pub mod auth {
@@ -135,7 +137,7 @@ async fn protected_route(axum::Extension(user_id): axum::Extension<UserId>) -> i
 // --- Programa Principal ---
 // --- Programa Principal (Modo Performance) ---
 #[tokio::main]
-async fn main() {
+async fn main() -> anyhow::Result<()> {
     // --- LÍNEAS DE DEBUG ELIMINADAS ---
     // tracing_subscriber::fmt()
     //     .with_env_filter("tower_http=debug,xois_santuario_final=trace")
@@ -164,10 +166,23 @@ async fn main() {
         // --- CAPA DE DEBUG ELIMINADA ---
         // .layer(TraceLayer::new_for_http());
 
-    let listener = tokio::net::TcpListener::bind("0.0.0.0:8080").await.unwrap();
-    // He comentado también el `tracing::info` para un silencio absoluto
-    // println!("Santuario escuchando en {}", listener.local_addr().unwrap());
-    axum::serve(listener, app).await.unwrap();
+    let addr = SocketAddr::from(([0, 0, 0, 0], 443));
+    println!("Santuario seguro escuchando en https://{}", addr);
+
+    // CORRECCIÓN: Usamos la ruta completa a `RustlsConfig`.
+    let tls_config = RustlsConfig::from_pem_file(
+        "/etc/letsencrypt/live/tu-dominio.com/fullchain.pem",
+        "/etc/letsencrypt/live/tu-dominio.com/privkey.pem",
+    )
+    .await?;
+
+    // CORRECCIÓN: Usamos la ruta completa a `bind_rustls`.
+    axum_server::bind_rustls(addr, tls_config)
+        .serve(app.into_make_service())
+        .await?;
+
+    // CORRECCIÓN: Devolvemos Ok(()) para satisfacer el tipo de retorno de main.
+    Ok(())
 }
 
 // --- Lógica del Token ---
