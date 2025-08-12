@@ -171,8 +171,8 @@ async fn main() -> anyhow::Result<()> {
 
     // CORRECCIÓN: Usamos la ruta completa a `RustlsConfig`.
     let tls_config = RustlsConfig::from_pem_file(
-        "/etc/letsencrypt/live/tu-dominio.com/fullchain.pem",
-        "/etc/letsencrypt/live/tu-dominio.com/privkey.pem",
+        "/etc/letsencrypt/live/plexo.cl/fullchain.pem",
+        "/etc/letsencrypt/live/plexo.cl/privkey.pem",
     )
     .await?;
 
