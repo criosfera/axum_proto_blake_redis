@@ -15,8 +15,6 @@ use chrono::{Duration, Utc};
 use prost::Message;
 use serde::{Deserialize, Serialize};
 use std::sync::Arc;
-use std::net::SocketAddr;
-use axum_server::tls_rustls::RustlsConfig;
 
 // --- Módulo Protobuf ---
 pub mod auth {
