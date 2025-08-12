@@ -1,0 +1,8 @@
+syntax = "proto3";
+
+package auth;
+
+message AuthPayload {
+  string user_id = 1;
+  int64 exp = 2;
+}
